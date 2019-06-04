@@ -102,7 +102,7 @@ export default class FetchDemoRact extends BaseComponent {
     const { inputValue, showText } = this.state;
     return (
       <View style={styles.container}>
-        <Text>Favorite Page</Text>
+        <Text>本地化数据库储存</Text>
         <TextInput
           value={inputValue}
           style={styles.input}

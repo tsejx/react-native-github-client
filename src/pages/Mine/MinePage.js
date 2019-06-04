@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, Button } from 'react-native';
 import BaseComponent from '../../base/BaseComponent';
 import { connect } from 'react-redux';
 import actions from '../../actions';
+import NavigationUtil from 'navigator/NavigationUtil';
+
 class MinePage extends BaseComponent {
   render() {
     // const { navigation } = this.props;
@@ -19,6 +21,51 @@ class MinePage extends BaseComponent {
             //     updatedTime: new Date().getTime(),
             //   },
             // });
+          }}
+        />
+                <Text
+          onPress={() => {
+            NavigationUtil.routeTo(
+              {
+                navigation: this.props.navigation,
+              },
+              'DetailPage'
+            );
+          }}
+        >
+          跳转到详情页
+        </Text>
+        <Button
+          title="Fetch"
+          onPress={() => {
+            NavigationUtil.routeTo(
+              {
+                navigation: this.props.navigation,
+              },
+              'FetchDemoPage'
+            );
+          }}
+        />
+        <Button
+          title="AsyncStorage"
+          onPress={() => {
+            NavigationUtil.routeTo(
+              {
+                navigation: this.props.navigation,
+              },
+              'AsyncStorageDemoPage'
+            );
+          }}
+        />
+        <Button
+          title="离线缓存框架"
+          onPress={() => {
+            NavigationUtil.routeTo(
+              {
+                navigation: this.props.navigation,
+              },
+              'DataStorageDemoPage'
+            );
           }}
         />
       </View>

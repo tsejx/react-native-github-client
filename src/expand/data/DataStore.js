@@ -1,5 +1,7 @@
 import { AsyncStorage } from 'react-native';
-import { FLAG_STORAGE } from 'constants';
+import Trending from 'GitHubTrending';
+import { FLAG_STORAGE } from 'constants/flag'
+// export const FLAG_STORAGE = { popular: 'popular', trending: 'trending' };
 
 export default class DataStore {
   saveData(url, data, callback) {
@@ -8,16 +10,17 @@ export default class DataStore {
     }
     AsyncStorage.setItem(url, JSON.stringify(this.wrapData(data)), callback);
   }
-
   wrapData(data) {
     return {
       data: data,
       timestamp: new Date().getTime(),
     };
   }
+
   /**
    * 获取本地数据
-   * @param {string} url
+   * @param url
+   * @return {Promise}
    */
   fetchLocalData(url) {
     return new Promise((resolve, reject) => {
@@ -27,11 +30,11 @@ export default class DataStore {
             resolve(JSON.parse(result));
           } catch (e) {
             reject(e);
-            console.error(e);
+            console.log(e);
           }
         } else {
           reject(error);
-          console.error(error);
+          console.log(error);
         }
       });
     });
@@ -39,8 +42,9 @@ export default class DataStore {
 
   /**
    * 从网络获取数据
-   * @param {string} url
-   * @param {string} flag
+   * @param url
+   * @param flag
+   * @return {Promise}
    */
   fetchNetData(url, flag) {
     return new Promise((resolve, reject) => {
@@ -56,15 +60,17 @@ export default class DataStore {
             this.saveData(url, responseData);
             resolve(responseData);
           })
-          .catch(error => reject(error));
+          .catch(error => {
+            reject(error);
+          });
       } else {
         new Trending()
-          .fetchTreanding(url)
+          .fetchTrending(url)
           .then(items => {
             if (!items) {
               throw new Error('responseData is null');
             }
-            this.saveData(url, itens);
+            this.saveData(url, items);
             resolve(items);
           })
           .catch(error => {
@@ -73,12 +79,13 @@ export default class DataStore {
       }
     });
   }
+
   /**
-   * 获取数据
-   * @param {string} url
+   * 获取数据,优先获取本地数据,如果无本地数据或本地数据过期则获取网络数据
+   * @param url
    * @return {Promise}
    */
-  fetchData(url) {
+  fetchData(url, flag) {
     return new Promise((resolve, reject) => {
       this.fetchLocalData(url)
         .then(wrapData => {
@@ -87,7 +94,7 @@ export default class DataStore {
           } else {
             this.fetchNetData(url, flag)
               .then(data => {
-                resolve(this._wrapData(data));
+                resolve(this.wrapData(data));
               })
               .catch(error => {
                 reject(error);
@@ -97,7 +104,7 @@ export default class DataStore {
         .catch(error => {
           this.fetchNetData(url, flag)
             .then(data => {
-              resolve(this._wrapData());
+              resolve(this.wrapData());
             })
             .catch(error => {
               reject(error);
@@ -106,10 +113,16 @@ export default class DataStore {
     });
   }
 
+  /**
+   * 检查timestamp 是否在有效期内
+   * @param timestamp 项目更新时间
+   * @return {boolean} true 不需要更新, false 需要更新
+   */
+
   static checkTimestampValid(timestamp) {
     const currentDate = new Date();
     const targetDate = new Date();
-    targetData.setTime(timestamp);
+    targetDate.setTime(timestamp);
     if (currentDate.getMonth() !== targetDate.getMonth()) {
       return false;
     }

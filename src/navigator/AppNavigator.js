@@ -11,6 +11,7 @@ import HomePage from 'pages/Entry/HomePage';
 import DetailPage from 'pages/Detail/DetailPage';
 import FetchDemoPage from 'pages/FetchDemoPage'
 import AsyncStorageDemoPage from 'pages/AsyncStorageDemoPage'
+import DataStorageDemoPage from 'pages/DataStorageDemoPage'
 
 import { connect } from 'react-redux';
 import {
@@ -52,6 +53,12 @@ const MainNavigator = createStackNavigator({
   },
   AsyncStorageDemoPage: {
     screen: AsyncStorageDemoPage,
+    navigationOptions: {
+      // header: null,
+    },
+  },
+  DataStorageDemoPage: {
+    screen: DataStorageDemoPage,
     navigationOptions: {
       // header: null,
     },

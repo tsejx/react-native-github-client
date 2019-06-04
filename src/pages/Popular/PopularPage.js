@@ -1,14 +1,9 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, FlatList, Alert } from 'react-native';
-
+import { View, Text, StyleSheet, FlatList, Alert, RefreshControl } from 'react-native';
 import { createMaterialTopTabNavigator, createAppContainer } from 'react-navigation';
-
 import BaseComponent from 'base/BaseComponent';
-
 import PopularTabPage from './PopularTabPage';
-
 import Request from '../../effects/Request';
-
 import { FLAG_STORAGE } from 'constants/flag';
 
 function getSearchUrl(tab) {
@@ -27,7 +22,7 @@ export default class PopularPage extends Component<Props> {
     // this.dataRequest = new Request(FLAG_STORAGE.popular);
 
     // 生产环境下通常是服务器下发的
-    this.tabData = ['JavaScript', 'Java', 'Go', 'Object-C', 'Python'];
+    this.tabData = ['JavaScript', 'CSS', 'React', 'Vue', 'AntDesign'];
   }
 
   generateTabs() {}
@@ -62,24 +57,20 @@ export default class PopularPage extends Component<Props> {
 
   render() {
     const TabNavigator = createAppContainer(
-      createMaterialTopTabNavigator(
-        this.generateTabPage(),
-        {
-          tabBarOptions: {
-            tabStyle: styles.tabStyle,
-            upperCaseLabel: false,
-            scrollEnabled: true,
-          },
-          indicatorStyle: styles.indicatorStyle,
-          labelStyle: styles.labelStyle,
-        }
-      )
+      createMaterialTopTabNavigator(this.generateTabPage(), {
+        tabBarOptions: {
+          tabStyle: styles.tabStyle,
+          upperCaseLabel: false,
+          scrollEnabled: true,
+        },
+        indicatorStyle: styles.indicatorStyle,
+        labelStyle: styles.labelStyle,
+      })
     );
 
     return (
       <View style={styles.container}>
         <TabNavigator />
-        <Text>Hello Popular Page</Text>
       </View>
     );
   }
@@ -95,7 +86,7 @@ const styles = StyleSheet.create({
   },
   indicatorStyle: {
     height: 2,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
   labelStyle: {
     fontSize: 13,

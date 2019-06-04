@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Button, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Button, TextInput, AsyncStorage } from 'react-native';
 import BaseComponent from '../base/BaseComponent';
 import { connect } from 'react-redux';
+import DataStorage from '../expand/data/DataStore';
+
+const KEY = 'save';
 
 export default class FetchDemoRact extends BaseComponent {
   constructor(props) {
@@ -10,7 +13,7 @@ export default class FetchDemoRact extends BaseComponent {
       showText: '',
       inputValue: '',
     };
-
+    this.dataStorage = new DataStorage();
     this.handleInputChange = this.handleInputChange.bind(this);
     this.loadData = this.loadData.bind(this);
   }
@@ -20,37 +23,34 @@ export default class FetchDemoRact extends BaseComponent {
   loadData() {
     const { inputValue } = this.state;
     let url = `https://api.github.com/search/repositories?q=${inputValue}`;
-    fetch(url)
-      .then(res => {
-        if (res.ok) {
-          return res.text();
-        }
-        throw new Error('Network response wase not ok.');
-      })
-      .then(res => {
+    this.dataStorage
+      .fetchData(url)
+      .then(data => {
+        let showData = `初始加载时间：${new Date(data.timestamp)}\n${JSON.stringify(data)}`;
         this.setState({
-          showText: res,
+          showText: showData,
         });
       })
-      .catch(err => {
-        this.setState({
-          showText: err.toStrinng(),
-        });
-      });
+      .catch(err => err && console.log(err.toString()));
   }
+
   render() {
     const { inputValue, showText } = this.state;
     return (
       <View style={styles.container}>
-        <Text>网络数据获取</Text>
-        <View style={styles.input_container}>
-          <TextInput
-            value={inputValue}
-            style={styles.input}
-            onChangeText={text => this.handleInputChange(text)}
-          />
-        </View>
-        <Button title="获取" onPress={() => this.loadData()} />
+        <Text>离线缓存框架设计</Text>
+        <TextInput
+          value={inputValue}
+          style={styles.input}
+          onChangeText={text => this.handleInputChange(text)}
+        />
+        <Text
+          onPress={() => {
+            this.loadData();
+          }}
+        >
+          获取
+        </Text>
         <Text>{showText}</Text>
       </View>
     );
@@ -64,10 +64,10 @@ const styles = StyleSheet.create({
   input_container: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-around',
   },
   input: {
     height: 30,
-    flex: 1,
     borderColor: 'black',
     borderWidth: 1,
     marginRight: 10,
