@@ -1,7 +1,7 @@
 import Types from '../types';
 import DataStorage from '../../expand/data/DataStore';
-import { Alert } from 'react-native';
 const FLAG_STORAGE = { popular: 'popular', trending: 'trending' };
+import { handleData } from '../ActionUtil';
 
 /**
  * 获取最热数据的异步Action
@@ -21,7 +21,7 @@ export function onRefreshPopular(storeName, url, pageSize) {
     dataStore
       .fetchData(url, FLAG_STORAGE.popular)
       .then(data => {
-        handleData(dispatch, storeName, data, pageSize);
+        handleData(Types.POPULAR_REFRESH_SUCCESS, dispatch, storeName, data, pageSize);
       })
       .catch(err => {
         console.log(err);
@@ -34,21 +34,20 @@ export function onRefreshPopular(storeName, url, pageSize) {
   };
 }
 
-function handleData(dispatch, storeName, data, pageSize) {
-  let fixItems = [];
-  if (data && data.data && data.data.items) {
-    fixItems = data.data.items;
-  }
-  Alert.alert;
-  dispatch({
-    type: Types.POPULAR_REFRESH_SUCCESS,
-    // 第一次要加载的数据
-    projectModes: pageSize > fixItems.length ? fixItems : fixItems.slice(0, pageSize),
-    items: fixItems,
-    storeName,
-    pageNo: 1,
-  });
-}
+// function handleData(dispatch, storeName, data, pageSize) {
+//   let fixItems = [];
+//   if (data && data.data && data.data.items) {
+//     fixItems = data.data.items;
+//   }
+//   dispatch({
+//     type: Types.POPULAR_REFRESH_SUCCESS,
+//     // 第一次要加载的数据
+//     projectModes: pageSize > fixItems.length ? fixItems : fixItems.slice(0, pageSize),
+//     items: fixItems,
+//     storeName,
+//     pageNo: 1,
+//   });
+// }
 
 export function onLoadMorePopular(storeName, pageNo, pageSize, dataArray = [], callback) {
   return dispatch => {

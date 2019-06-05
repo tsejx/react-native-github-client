@@ -1,16 +1,19 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, FlatList, Alert, RefreshControl } from 'react-native';
+import { View, StyleSheet, DeviceInfo } from 'react-native';
 import { createMaterialTopTabNavigator, createAppContainer } from 'react-navigation';
 import BaseComponent from 'base/BaseComponent';
 import PopularTabPage from './PopularTabPage';
 import Request from '../../effects/Request';
 import { FLAG_STORAGE } from 'constants/flag';
+import NavigationBar from 'components/NavigationBar/index';
 
 function getSearchUrl(tab) {
   const URL = 'https://api.github.com/search/repositories?q=';
   const QUERY_STR = '&sort=starts';
   return URL + tab + QUERY_STR;
 }
+
+const THEME_COLOR = '#678';
 
 type Props = {};
 export default class PopularPage extends Component<Props> {
@@ -56,6 +59,15 @@ export default class PopularPage extends Component<Props> {
   }
 
   render() {
+    let statusBar = {
+      backgroundColor: THEME_COLOR,
+      barStyle: 'light-content',
+    };
+
+    let navigationBar = (
+      <NavigationBar title="Popular" statusBar={statusBar} style={{ backgroundColor: THEME_COLOR }} />
+    );
+
     const TabNavigator = createAppContainer(
       createMaterialTopTabNavigator(this.generateTabPage(), {
         tabBarOptions: {
@@ -63,13 +75,18 @@ export default class PopularPage extends Component<Props> {
           upperCaseLabel: false,
           scrollEnabled: true,
         },
+        style: {
+          backgroundColor: '#678',
+          height: 30,
+        },
         indicatorStyle: styles.indicatorStyle,
         labelStyle: styles.labelStyle,
       })
     );
 
     return (
-      <View style={styles.container}>
+      <View style={{ flex: 1, marginTop: DeviceInfo.isIPhoneX_deprecated ? 30 : 0 }}>
+        {navigationBar}
         <TabNavigator />
       </View>
     );
@@ -77,20 +94,16 @@ export default class PopularPage extends Component<Props> {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: 31,
-  },
   tabStyle: {
-    minWidth: 50,
+    // minWidth: 50,
+    padding: 0,
   },
   indicatorStyle: {
     height: 2,
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
   },
   labelStyle: {
     fontSize: 13,
-    marginTop: 6,
-    marginBottom: 6,
+    margin: 0,
   },
 });

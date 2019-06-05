@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 
-export default class ListItem extends Component {
+export default class PopularItem extends Component {
   render() {
     const { item } = this.props;
     if (!item || !item.owner) return null;

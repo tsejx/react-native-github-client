@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Alert } from 'react-native';
+import { View } from 'react-native';
 
 import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
 import { BottomTabBar } from 'react-navigation-tabs';
@@ -12,6 +12,7 @@ import MinePage from 'pages/Mine/MinePage';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
+
 
 import { connect } from 'react-redux';
 
@@ -61,7 +62,7 @@ class DynamicTabNavigator extends Component {
   }
   renderTabNavigator() {
     // 优化，避免重复触发renderTabNavigator
-    if (this.Tabs){
+    if (this.Tabs) {
       return this.Tabs;
     }
     const { PopularPage, TrendingPage, FavoritePage, MinePage } = TABS;
@@ -72,13 +73,13 @@ class DynamicTabNavigator extends Component {
     // 动态配置Tab属性
     PopularPage.navigationOptions.tabBarLabel = '探索';
 
-    return this.Tabs = createAppContainer(
+    return (this.Tabs = createAppContainer(
       createBottomTabNavigator(tabs, {
         tabBarComponent: props => {
           return <TabBarComponent theme={this.props.theme} {...props} />;
         },
       })
-    );
+    ));
   }
   render() {
     const Tab = this.renderTabNavigator();

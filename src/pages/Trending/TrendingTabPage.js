@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  Alert,
   View,
   Text,
   StyleSheet,
@@ -10,13 +11,13 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import actions from '../../actions/index';
-import PopularItem from '../../components/PopularItem/index';
+import TrendingItem from '../../components/TrendingItem/index';
 import Toast from 'react-native-easy-toast';
 const THEME_COLOR = 'red';
 const PAGE_SIZE = 10;
 
 type Props = {};
-class PopularTab extends Component<Props> {
+class TrendingTab extends Component<Props> {
   constructor(props) {
     super(props);
     const { tabLabel } = this.props;
@@ -27,21 +28,21 @@ class PopularTab extends Component<Props> {
     this.loadData();
   }
   loadData(loadMore) {
-    const { onRefreshPopular, onLoadMorePopular } = this.props;
+    const { onRefreshTrending, onLoadMoreTrending } = this.props;
     const store = this.getStore();
     const url = this.generateFetchUrl(this.storeName);
     if (loadMore) {
-      onLoadMorePopular(this.storeName, ++store.pageNo, PAGE_SIZE, store.items, callback => {
+      onLoadMoreTrending(this.storeName, ++store.pageNo, PAGE_SIZE, store.items, callback => {
         this.refs.toast.show('沒有更多了～');
       });
     } else {
-      onRefreshPopular(this.storeName, url, PAGE_SIZE);
+      onRefreshTrending(this.storeName, url, PAGE_SIZE);
     }
   }
 
   getStore() {
-    const { popular } = this.props;
-    let store = popular[this.storeName];
+    const { trending } = this.props;
+    let store = trending[this.storeName];
     if (!store) {
       store = {
         items: [],
@@ -56,14 +57,14 @@ class PopularTab extends Component<Props> {
   }
 
   generateFetchUrl(key) {
-    const URL = 'https://api.github.com/search/repositories?q=';
-    const QUERY_STR = '&sort=starts';
+    const URL = 'https://github.com/trending/';
+    const QUERY_STR = '?since=daily';
     return URL + key + QUERY_STR;
   }
 
   renderItem(data) {
     const { item } = data;
-    return <PopularItem item={item} onSelect={() => {}} />;
+    return <TrendingItem item={item} onSelect={() => {}} />;
   }
 
   genIndicator() {
@@ -77,11 +78,10 @@ class PopularTab extends Component<Props> {
 
   render() {
     let store = this.getStore();
-
     return (
       <View style={styles.container}>
         <FlatList
-          keyExtractor={item => `${item.id}`}
+          keyExtractor={item => '' + item.fullName}
           data={store.projectModes}
           renderItem={data => this.renderItem(data)}
           refreshControl={
@@ -116,22 +116,22 @@ class PopularTab extends Component<Props> {
 }
 
 const mapStateToProps = state => ({
-  popular: state.popular,
+  trending: state.trending,
 });
 
 const mapDispatchToProps = dispatch => ({
-  onRefreshPopular: (storeName, url, pageSize) =>
-    dispatch(actions.onRefreshPopular(storeName, url, pageSize)),
-  onLoadMorePopular: (storeName, url, pageSize, items, callback) =>
-    dispatch(actions.onLoadMorePopular(storeName, url, pageSize, items, callback)),
+  onRefreshTrending: (storeName, url, pageSize) =>
+    dispatch(actions.onRefreshTrending(storeName, url, pageSize)),
+  onLoadMoreTrending: (storeName, url, pageSize, items, callback) =>
+    dispatch(actions.onLoadMoreTrending(storeName, url, pageSize, items, callback)),
 });
 
-const PopularTabPage = connect(
+const TrendingTabPage = connect(
   mapStateToProps,
   mapDispatchToProps
-)(PopularTab);
+)(TrendingTab);
 
-export default PopularTabPage;
+export default TrendingTabPage;
 
 const styles = StyleSheet.create({
   container: {

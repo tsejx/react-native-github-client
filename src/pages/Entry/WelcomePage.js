@@ -3,7 +3,7 @@
  * @flow
  * **/
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, InteractionManager, Platform, Alert } from 'react-native';
+import { StyleSheet, View, Text, InteractionManager, Platform } from 'react-native';
 import NavigationUtil from 'navigator/NavigationUtil';
 
 type Props = {};
