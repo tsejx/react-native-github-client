@@ -8,24 +8,41 @@ import {
   FlatList,
   RefreshControl,
   ActivityIndicator,
+  DeviceEventEmitter,
 } from 'react-native';
 import { connect } from 'react-redux';
 import actions from '../../actions/index';
 import TrendingItem from '../../components/TrendingItem/index';
 import Toast from 'react-native-easy-toast';
+import  NavigationUtil from '../../navigator/NavigationUtil'
 const THEME_COLOR = 'red';
 const PAGE_SIZE = 10;
+const EVENT_TYPE_TIME_SPAN_CHANGE = 'EVENT_TYPE_TIME_SPAN_CHANGE';
+
 
 type Props = {};
 class TrendingTab extends Component<Props> {
   constructor(props) {
     super(props);
-    const { tabLabel } = this.props;
+    const { tabLabel, timeSpan } = this.props;
     this.storeName = tabLabel;
+    this.timeSpan = timeSpan;
     this.renderItem = this.renderItem.bind(this);
   }
   componentDidMount() {
     this.loadData();
+    this.timeSpanChangeListener = DeviceEventEmitter.addListener(
+      EVENT_TYPE_TIME_SPAN_CHANGE,
+      timeSpan => {
+        this.timeSpan = timeSpan;
+        this.loadData();
+      }
+    );
+  }
+  componentWillUnmount() {
+    if (this.timeSpanChangeListener) {
+      this.timeSpanChangeListener.remove();
+    }
   }
   loadData(loadMore) {
     const { onRefreshTrending, onLoadMoreTrending } = this.props;
@@ -53,18 +70,31 @@ class TrendingTab extends Component<Props> {
         hideLoadingMore: true,
       };
     }
+    // console.log('store', store)
     return store;
   }
 
   generateFetchUrl(key) {
     const URL = 'https://github.com/trending/';
-    const QUERY_STR = '?since=daily';
+    const QUERY_STR = '?' + this.timeSpan.searchText;
     return URL + key + QUERY_STR;
   }
 
   renderItem(data) {
     const { item } = data;
-    return <TrendingItem item={item} onSelect={() => {}} />;
+    return (
+      <TrendingItem
+        item={item}
+        onSelect={() => {
+          NavigationUtil.routeTo(
+            {
+              projectModel: item,
+            },
+            'DetailPage'
+          );
+        }}
+      />
+    );
   }
 
   genIndicator() {

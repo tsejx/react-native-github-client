@@ -21,6 +21,7 @@ const defaultState = {
  * @return {{theme: (*|onAction|string)}}
  */
 export default function onAction(state = defaultState, action) {
+  console.log(action.type, state[action.storeName]);
   switch (action.type) {
     // 下拉刷新成功
     case Types.POPULAR_REFRESH_SUCCESS:
@@ -43,7 +44,7 @@ export default function onAction(state = defaultState, action) {
         ...state,
         [action.storeName]: {
           ...state[action.storeName],
-          // items: action.items,
+          items: action.items,
           isLoading: true,
           hideLoadingMore: true,
         },

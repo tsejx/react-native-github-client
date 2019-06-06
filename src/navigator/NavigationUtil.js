@@ -4,7 +4,7 @@ export default class NavigationUtil {
    * @param {*} navigation
    */
   static goBack(navigation) {
-    navigation.goback();
+    navigation.goBack();
   }
   /**
    * 重定向至主页面

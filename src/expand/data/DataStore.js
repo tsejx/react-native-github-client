@@ -1,4 +1,4 @@
-import { AsyncStorage } from 'react-native';
+import { AsyncStorage, Alert } from 'react-native';
 import Trending from 'GitHubTrending';
 import { FLAG_STORAGE } from 'constants/flag'
 
