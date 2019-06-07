@@ -1,9 +1,8 @@
 import { AsyncStorage, Alert } from 'react-native';
 import Trending from 'GitHubTrending';
-import { FLAG_STORAGE } from 'constants/flag'
+import { FLAG_STORAGE } from 'constants/flag';
 
-export default class DataStore {
-
+export default class FetchData {
   saveData(url, data, callback) {
     if (!data || !url) {
       return;
@@ -16,6 +15,39 @@ export default class DataStore {
       data: data,
       timestamp: new Date().getTime(),
     };
+  }
+
+  /**
+   * 获取数据,优先获取本地数据,如果无本地数据或本地数据过期则获取网络数据
+   * @param url
+   * @return {Promise}
+   */
+  get(url, flag) {
+    return new Promise((resolve, reject) => {
+      this.fetchLocalData(url)
+        .then(wrapData => {
+          if (wrapData && FetchData.checkTimestampValid(wrapData.timestamp)) {
+            resolve(wrapData);
+          } else {
+            this.fetchNetData(url, flag)
+              .then(data => {
+                resolve(this.wrapData(data));
+              })
+              .catch(error => {
+                reject(error);
+              });
+          }
+        })
+        .catch(error => {
+          this.fetchNetData(url, flag)
+            .then(data => {
+              resolve(this.wrapData());
+            })
+            .catch(error => {
+              reject(error);
+            });
+        });
+    });
   }
 
   /**
@@ -65,6 +97,7 @@ export default class DataStore {
             reject(error);
           });
       } else {
+        // GithubTrending页面解析库
         new Trending()
           .fetchTrending(url)
           .then(items => {
@@ -78,39 +111,6 @@ export default class DataStore {
             reject(error);
           });
       }
-    });
-  }
-
-  /**
-   * 获取数据,优先获取本地数据,如果无本地数据或本地数据过期则获取网络数据
-   * @param url
-   * @return {Promise}
-   */
-  fetchData(url, flag) {
-    return new Promise((resolve, reject) => {
-      this.fetchLocalData(url)
-        .then(wrapData => {
-          if (wrapData && DataStore.checkTimestampValid(wrapData.timestamp)) {
-            resolve(wrapData);
-          } else {
-            this.fetchNetData(url, flag)
-              .then(data => {
-                resolve(this.wrapData(data));
-              })
-              .catch(error => {
-                reject(error);
-              });
-          }
-        })
-        .catch(error => {
-          this.fetchNetData(url, flag)
-            .then(data => {
-              resolve(this.wrapData());
-            })
-            .catch(error => {
-              reject(error);
-            });
-        });
     });
   }
 

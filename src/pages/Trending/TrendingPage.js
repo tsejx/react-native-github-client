@@ -1,12 +1,17 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, DeviceInfo, TouchableOpacity, DeviceEventEmitter } from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  DeviceInfo,
+  TouchableOpacity,
+  DeviceEventEmitter,
+} from 'react-native';
 import { createMaterialTopTabNavigator, createAppContainer } from 'react-navigation';
-import BaseComponent from 'base/BaseComponent';
 import TrendingTabPage from './TrendingTabPage';
-import Request from '../../effects/Request';
 import { FLAG_STORAGE } from 'constants/flag';
-import NavigationBar from 'components/NavigationBar/index';
-import TrendingDialog, { TimeSpans } from '../../components/TrendingDialog/index';
+import NavigationBar from 'components/NavigationBar';
+import TrendingDialog, { TimeSpans } from 'components/TrendingDialog';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 function getSearchUrl(tab) {
@@ -54,7 +59,7 @@ export default class TrendingPage extends Component<Props> {
     this.setState({
       timeSpan: tab,
     });
-    DeviceEventEmitter.emit(EVENT_TYPE_TIME_SPAN_CHANGE, tab)
+    DeviceEventEmitter.emit(EVENT_TYPE_TIME_SPAN_CHANGE, tab);
   }
 
   renderTrendingDialog() {
@@ -66,13 +71,13 @@ export default class TrendingPage extends Component<Props> {
     );
   }
 
-  generateTabs() {}
-
   generateTabPage() {
     const tabs = {};
     this.tabData.forEach((item, index) => {
       tabs[`tab${index}`] = {
-        screen: props => <TrendingTabPage {...props} tabLabel={item} timeSpan={this.state.timeSpan} />,
+        screen: props => (
+          <TrendingTabPage {...props} tabLabel={item} timeSpan={this.state.timeSpan} />
+        ),
         navigationOptions: {
           title: item,
         },
@@ -81,38 +86,36 @@ export default class TrendingPage extends Component<Props> {
     return tabs;
   }
 
-  renderTabNav(){
+  renderTabNav() {
     if (!this.tabNav)
-    // 这样TabNavigator就不用每次都要重复创建，只有初始化和改变Tab的时候才会重新创建
-    this.tabNav = createAppContainer(
-      createMaterialTopTabNavigator(this.generateTabPage(), {
-        tabBarOptions: {
-          tabStyle: styles.tabStyle,
-          upperCaseLabel: false,
-          scrollEnabled: true,
-        },
-        indicatorStyle: styles.indicatorStyle,
-        labelStyle: styles.labelStyle,
-      })
-    );
-    return this.tabNav
+      // 这样TabNavigator就不用每次都要重复创建，只有初始化和改变Tab的时候才会重新创建
+      this.tabNav = createAppContainer(
+        createMaterialTopTabNavigator(this.generateTabPage(), {
+          tabBarOptions: {
+            tabStyle: styles.tabStyle,
+            upperCaseLabel: false,
+            scrollEnabled: true,
+          },
+          indicatorStyle: styles.indicatorStyle,
+          labelStyle: styles.labelStyle,
+        })
+      );
+    return this.tabNav;
   }
 
   render() {
-    let statusBar = {
-      backgroundColor: THEME_COLOR,
-      barStyle: 'light-content',
-    };
-
     let navigationBar = (
       <NavigationBar
         titleView={this.renderTitleView()}
-        statusBar={statusBar}
+        statusBar={{
+          backgroundColor: THEME_COLOR,
+          barStyle: 'light-content',
+        }}
         style={{ backgroundColor: THEME_COLOR }}
       />
     );
 
-  const TabNavigator = this.renderTabNav();
+    const TabNavigator = this.renderTabNav();
 
     return (
       <View style={{ flex: 1, marginTop: DeviceInfo.isIPhoneX_deprecated ? 30 : 0 }}>

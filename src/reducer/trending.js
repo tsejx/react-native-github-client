@@ -1,4 +1,4 @@
-import Types from '../../actions/types';
+import Types from '../actions/types';
 
 const defaultState = {
   theme: 'blue',
@@ -21,10 +21,10 @@ const defaultState = {
  * @return {{theme: (*|onAction|string)}}
  */
 export default function onAction(state = defaultState, action) {
-  console.log(action.type, state[action.storeName]);
+  // console.log('!!!!', action.type, action, state);
   switch (action.type) {
     // 下拉刷新成功
-    case Types.POPULAR_REFRESH_SUCCESS:
+    case Types.TRENDING_REFRESH_SUCCESS:
       return {
         ...state,
         [action.storeName]: {
@@ -32,25 +32,25 @@ export default function onAction(state = defaultState, action) {
           // 原始数据
           items: action.items,
           // 当前要展示的数据
-          projectModes: action.projectModes,
+          projectModel: action.projectModel,
           isLoading: false,
           hideLoadingMore: false,
           pageNo: action.pageNo,
         },
       };
     // 下拉刷新
-    case Types.POPULAR_REFRESH:
+    case Types.TRENDING_REFRESH:
       return {
         ...state,
         [action.storeName]: {
           ...state[action.storeName],
-          items: action.items,
+          // items: action.items,
           isLoading: true,
           hideLoadingMore: true,
         },
       };
     // 下拉刷新失败
-    case Types.POPULAR_REFRESH_FAIL:
+    case Types.TRENDING_REFRESH_FAIL:
       return {
         ...state,
         [action.storeName]: {
@@ -59,24 +59,24 @@ export default function onAction(state = defaultState, action) {
         },
       };
     // 上拉加载更多成功
-    case Types.POPULAR_LOAD_MORE_SUCCESS:
+    case Types.TRENDING_LOAD_MORE_SUCCESS:
       return {
         ...state,
         [action.storeName]: {
           ...state[action.storeName],
           // items: action.items,
-          projectModes: action.projectModes,
+          projectModel: action.projectModel,
           hideLoadingMore: false,
           pageNo: action.pageNo,
         },
       };
     // 上拉加载更多失败
-    case Types.POPULAR_LOAD_MORE_FAIL:
+    case Types.TRENDING_LOAD_MORE_FAIL:
       return {
         ...state,
         [action.storeName]: {
           ...state[action.storeName],
-          projectModes: action.projectModes,
+          projectModel: action.projectModel,
           hideLoadingMore: true,
           pageNo: action.pageNo,
         },

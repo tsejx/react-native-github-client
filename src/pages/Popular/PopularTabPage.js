@@ -8,46 +8,72 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from 'react-native';
-import { connect } from 'react-redux';
-import actions from '../../actions/index';
-import PopularItem from '../../components/PopularItem/index';
 import Toast from 'react-native-easy-toast';
+import PopularItem from 'components/PopularItem';
+import { connect } from 'react-redux';
+import api from 'constants/api';
+
+import actions from '../../actions/index';
+
+import FavoriteDao from '../../expand/FavoriteDao';
+import FavoriteUtil from '../../model/FavoriteUtil';
+
+import { FLAG_STORAGE } from 'constants/flag';
+
+const favoriteDao = new FavoriteDao(FLAG_STORAGE.popular);
+
 const THEME_COLOR = 'red';
 const PAGE_SIZE = 10;
 
-type Props = {};
-class PopularTab extends Component<Props> {
+class PopularTab extends Component {
   constructor(props) {
     super(props);
     const { tabLabel } = this.props;
-    this.storeName = tabLabel;
+    this.tabName = tabLabel;
     this.renderItem = this.renderItem.bind(this);
   }
   componentDidMount() {
     this.loadData();
   }
+  // 加载标签页数据
   loadData(loadMore) {
-    const { onRefreshPopular, onLoadMorePopular } = this.props;
-    const store = this.getStore();
-    const url = this.generateFetchUrl(this.storeName);
-    if (loadMore) {
-      onLoadMorePopular(this.storeName, ++store.pageNo, PAGE_SIZE, store.items, callback => {
-        this.refs.toast.show('沒有更多了～');
-      });
+    if (!loadMore) {
+      this.onRefresh();
     } else {
-      onRefreshPopular(this.storeName, url, PAGE_SIZE);
+      this.onLoadMore();
     }
   }
 
+  // 列表顶部下拉刷新
+  onRefresh() {
+    const url = api.search(this.tabName.toLowerCase());
+    this.props.onRefreshPopular(this.tabName, url, PAGE_SIZE, favoriteDao);
+  }
+
+  // 列表触底加载更多
+  onLoadMore() {
+    const store = this.getStore();
+    this.props.onLoadMorePopular(
+      this.tabName,
+      ++store.pageNo,
+      PAGE_SIZE,
+      store.items,
+      favoriteDao,
+      callback => {
+        this.refs.toast.show('沒有更多了～');
+      }
+    );
+  }
+
+  // 获取当前标签页数据状态
   getStore() {
-    const { popular } = this.props;
-    let store = popular[this.storeName];
+    let store = this.props.popular[this.tabName];
     if (!store) {
       store = {
         items: [],
         isLoading: false,
         // 需要显示的数据
-        projectModes: [],
+        projectModel: [],
         // 默认隐藏加载更多
         hideLoadingMore: true,
       };
@@ -55,18 +81,21 @@ class PopularTab extends Component<Props> {
     return store;
   }
 
-  generateFetchUrl(key) {
-    const URL = 'https://api.github.com/search/repositories?q=';
-    const QUERY_STR = '&sort=starts';
-    return URL + key + QUERY_STR;
-  }
-
   renderItem(data) {
     const { item } = data;
-    return <PopularItem item={item} onSelect={() => {}} />;
+    return (
+      <PopularItem
+        item={item}
+        onSelect={() => {}}
+        // 关联到BaseItem的handleFavoriteChange
+        // onFavorite={(item, isFavorite) => {
+        //   FavoriteUtil.onFavorite(favoriteDao, item, isFavorite, FLAG_STORAGE.popular);
+        // }}
+      />
+    );
   }
 
-  genIndicator() {
+  renderListFooter() {
     return this.getStore().hideLoadingMore ? null : (
       <View style={styles.indicatorContainer}>
         <ActivityIndicator style={styles.indicator} />
@@ -77,34 +106,44 @@ class PopularTab extends Component<Props> {
 
   render() {
     let store = this.getStore();
-
+    if (this.tabName === 'JavaScript') {
+      console.log('this.store:', store);
+    }
     return (
       <View style={styles.container}>
         <FlatList
-          keyExtractor={item => `${item.id}`}
-          data={store.projectModes}
-          renderItem={data => this.renderItem(data)}
+          keyExtractor={(item, index) => {
+            return `${item.item.id}`;
+          }}
+          data={store.projectModel}
+          renderItem={this.renderItem}
+          style={styles.flatList}
+          // 列表顶部下拉刷新
           refreshControl={
             <RefreshControl
-              title={'Loading'}
-              titleColor={THEME_COLOR}
-              tintColor={THEME_COLOR}
-              colors={[THEME_COLOR]}
+              title="Loading"
+              titleColor='#586069'
+              tintColor='#586069'
+              colors={['#586069']}
               refreshing={store.isLoading}
               onRefresh={() => this.loadData()}
             />
           }
-          ListFooterComponent={() => this.genIndicator()}
+          // 尾部组件
+          ListFooterComponent={() => this.renderListFooter()}
+          // 触底回调函数
           onEndReached={() => {
             setTimeout(() => {
-              // 滚动时两次调用onEndReached
+              // 修复滚动时两次触发的问题
               if (this.canLoadMore) {
                 this.loadData(true);
                 this.canLoadMore = false;
               }
             }, 100);
           }}
+          // 触底回调触发间隙
           onEndReachedThreshold={0.5}
+          // 滚动动画开始时调用
           onMomentumScrollBegin={() => {
             this.canLoadMore = true;
           }}
@@ -120,10 +159,11 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  onRefreshPopular: (storeName, url, pageSize) =>
-    dispatch(actions.onRefreshPopular(storeName, url, pageSize)),
-  onLoadMorePopular: (storeName, url, pageSize, items, callback) =>
-    dispatch(actions.onLoadMorePopular(storeName, url, pageSize, items, callback)),
+  onRefreshPopular: (storeName, url, pageSize, favoriteDao) =>
+    dispatch(actions.onRefreshPopular(storeName, url, pageSize, favoriteDao)),
+
+  onLoadMorePopular: (storeName, url, pageSize, items, favoriteDao, callback) =>
+    dispatch(actions.onLoadMorePopular(storeName, url, pageSize, items, favoriteDao, callback)),
 });
 
 const PopularTabPage = connect(
@@ -138,6 +178,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  flatList: {
+    paddingTop: 8,
   },
   indicatorContainer: {
     alignItems: 'center',

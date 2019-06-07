@@ -1,49 +1,17 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, DeviceInfo } from 'react-native';
 import { createMaterialTopTabNavigator, createAppContainer } from 'react-navigation';
-import BaseComponent from 'base/BaseComponent';
+import NavigationBar from 'components/NavigationBar';
 import PopularTabPage from './PopularTabPage';
-import Request from '../../effects/Request';
-import { FLAG_STORAGE } from 'constants/flag';
-import NavigationBar from 'components/NavigationBar/index';
+import theme from 'constants/theme';
 
-function getSearchUrl(tab) {
-  const URL = 'https://api.github.com/search/repositories?q=';
-  const QUERY_STR = '&sort=starts';
-  return URL + tab + QUERY_STR;
-}
-
-const THEME_COLOR = '#678';
-
-type Props = {};
-export default class PopularPage extends Component<Props> {
+export default class PopularPage extends Component {
   constructor(props) {
     super(props);
-
     this.state = {};
-
-    // this.dataRequest = new Request(FLAG_STORAGE.popular);
-
     // 生产环境下通常是服务器下发的
-    this.tabData = ['JavaScript', 'CSS', 'React', 'Vue', 'AntDesign'];
+    this.tabData = ['JavaScript', 'CSS'];
   }
-
-  generateTabs() {}
-
-  // loadData(shouldShowLodaing) {
-  //   if (shouldShowLodaing) {
-  //     this.setState({
-  //       isLoading: true,
-  //     });
-  //   }
-
-  //   let url = getSearchUrl(this.props.tabLabel);
-
-  //   this.dataRequest
-  //     .fetchNetRepository(url)
-  //     .then(res => {})
-  //     .catch(err => {});
-  // }
 
   generateTabPage() {
     const tabs = {};
@@ -58,34 +26,43 @@ export default class PopularPage extends Component<Props> {
     return tabs;
   }
 
+  renderTabNav() {
+    if (!this.tabNav) {
+      this.tabNav = createAppContainer(
+        createMaterialTopTabNavigator(this.generateTabPage(), {
+          tabBarOptions: {
+            tabStyle: styles.tabStyle,
+            upperCaseLabel: false,
+            scrollEnabled: true,
+          },
+          style: {
+            backgroundColor: '#fff',
+            height: 30,
+          },
+          indicatorStyle: styles.indicatorStyle,
+          labelStyle: styles.labelStyle,
+        })
+      );
+    }
+    return this.tabNav;
+  }
+
   render() {
-    let statusBar = {
-      backgroundColor: THEME_COLOR,
-      barStyle: 'light-content',
-    };
-
     let navigationBar = (
-      <NavigationBar title="Popular" statusBar={statusBar} style={{ backgroundColor: THEME_COLOR }} />
+      <NavigationBar
+        title="Popular"
+        hide={false}
+        statusBar={{
+          backgroundColor: theme.THEME_COLOR,
+          barStyle: 'light-content',
+        }}
+      />
     );
 
-    const TabNavigator = createAppContainer(
-      createMaterialTopTabNavigator(this.generateTabPage(), {
-        tabBarOptions: {
-          tabStyle: styles.tabStyle,
-          upperCaseLabel: false,
-          scrollEnabled: true,
-        },
-        style: {
-          backgroundColor: '#678',
-          height: 30,
-        },
-        indicatorStyle: styles.indicatorStyle,
-        labelStyle: styles.labelStyle,
-      })
-    );
+    const TabNavigator = this.renderTabNav();
 
     return (
-      <View style={{ flex: 1, marginTop: DeviceInfo.isIPhoneX_deprecated ? 30 : 0 }}>
+      <View style={styles.container}>
         {navigationBar}
         <TabNavigator />
       </View>
@@ -94,8 +71,12 @@ export default class PopularPage extends Component<Props> {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    // 用于判断是否为iPhoneX
+    marginTop: DeviceInfo.isIPhoneX_deprecated ? 30 : 0,
+  },
   tabStyle: {
-    // minWidth: 50,
     padding: 0,
   },
   indicatorStyle: {

@@ -3,6 +3,7 @@ export default {
   THEME_CHANGE: 'THEME_CHANGE',
   // 初始化主题
   THEME_INIT: 'THEME_INIT',
+
   // 下拉刷新
   POPULAR_REFRESH: 'POPULAR_REFRESH',
   // 下拉刷新成功

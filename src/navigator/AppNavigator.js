@@ -1,28 +1,27 @@
 import {
   createStackNavigator,
-  // createMaterialTopTabNavigator,
-  //   createBottomTabNavigatorcreateSwitchNavigator,
   createSwitchNavigator,
   createAppContainer,
+  // createMaterialTopTabNavigator,
+  // createBottomTabNavigatorcreateSwitchNavigator,
 } from 'react-navigation';
 
 import WelcomePage from 'pages/Entry/WelcomePage';
 import HomePage from 'pages/Entry/HomePage';
 import DetailPage from 'pages/Detail/DetailPage';
-import FetchDemoPage from 'pages/FetchDemoPage'
-import AsyncStorageDemoPage from 'pages/AsyncStorageDemoPage'
-import DataStorageDemoPage from 'pages/DataStorageDemoPage'
+import FetchDemoPage from 'pages/FetchDemoPage';
+import AsyncStorageDemoPage from 'pages/AsyncStorageDemoPage';
+import DataStorageDemoPage from 'pages/DataStorageDemoPage';
 
-import { connect } from 'react-redux';
 import {
   createReactNavigationReduxMiddleware,
   createReduxContainer,
 } from 'react-navigation-redux-helpers';
-import { Button } from 'react-native'
+import { connect } from 'react-redux';
+import navigation from 'constants/navigation'
 
-// 设置根路由
-export const rootCom = 'Init';
 
+// 应用初始化页面
 const InitNavigator = createStackNavigator({
   WelcomePage: {
     screen: WelcomePage,
@@ -32,6 +31,7 @@ const InitNavigator = createStackNavigator({
   },
 });
 
+// 应用主页面
 const MainNavigator = createStackNavigator({
   HomePage: {
     screen: HomePage,
@@ -45,30 +45,30 @@ const MainNavigator = createStackNavigator({
       header: null,
     },
   },
-  FetchDemoPage: {
-    screen: FetchDemoPage,
-    navigationOptions: {
-      // header: null,
-    },
-  },
-  AsyncStorageDemoPage: {
-    screen: AsyncStorageDemoPage,
-    navigationOptions: {
-      // header: null,
-    },
-  },
-  DataStorageDemoPage: {
-    screen: DataStorageDemoPage,
-    navigationOptions: {
-      // header: null,
-    },
-  },
+  // FetchDemoPage: {
+  //   screen: FetchDemoPage,
+  //   navigationOptions: {
+  //     // header: null,
+  //   },
+  // },
+  // AsyncStorageDemoPage: {
+  //   screen: AsyncStorageDemoPage,
+  //   navigationOptions: {
+  //     // header: null,
+  //   },
+  // },
+  // DataStorageDemoPage: {
+  //   screen: DataStorageDemoPage,
+  //   navigationOptions: {
+  //     // header: null,
+  //   },
+  // },
 });
 
 export const RootNavigator = createAppContainer(
   createSwitchNavigator(
     {
-      Init: InitNavigator,
+      [navigation.init]: InitNavigator,
       Main: MainNavigator,
     },
     {
@@ -101,7 +101,8 @@ const AppWithNavigationState = createReduxContainer(RootNavigator, 'root');
  * @param state
  */
 const mapStateToProps = state => ({
-  state: state.nav, //v2
+  // v2
+  state: state.nav,
 });
 
 /**

@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
-import BaseComponent from '../../base/BaseComponent';
 import { connect } from 'react-redux';
 import actions from '../../actions/index';
-class FavoritePage extends BaseComponent {
+class FavoritePage extends Component {
   render() {
     // const { navigation } = this.props;
     return (

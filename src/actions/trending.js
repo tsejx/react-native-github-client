@@ -1,6 +1,6 @@
-import Types from '../types';
-import DataStore from '../../expand/data/DataStore';
-import { handleData } from '../ActionUtil';
+import Types from './types';
+import FetchData from '../services/FetchData';
+import { _projectModel, handleData } from './ActionUtil';
 const FLAG_STORAGE = { popular: 'popular', trending: 'trending' };
 
 /**
@@ -10,18 +10,18 @@ const FLAG_STORAGE = { popular: 'popular', trending: 'trending' };
  * @param pageSize
  * @return {function}
  */
-export function onRefreshTrending(storeName, url, pageSize) {
+export function onRefreshTrending(storeName, url, pageSize, favoriteDao) {
   return dispatch => {
     dispatch({
       type: Types.TRENDING_REFRESH_SUCCESS,
       storeName: storeName,
     });
-    let dataStore = new DataStore();
+    let dataStore = new FetchData();
     // 异步Action与数据流
     dataStore
-      .fetchData(url, FLAG_STORAGE.trending) // 异步action与数据流
+      .get(url, FLAG_STORAGE.trending) // 异步action与数据流
       .then(data => {
-        handleData(Types.TRENDING_REFRESH_SUCCESS, dispatch, storeName, data, pageSize);
+        handleData(Types.TRENDING_REFRESH_SUCCESS, dispatch, storeName, data, pageSize, favoriteDao);
       })
       .catch(err => {
         console.log(err);
@@ -43,7 +43,7 @@ export function onRefreshTrending(storeName, url, pageSize) {
  * @param callBack 回调函数,可以通过回调函数来向调用页面通信: 比如异常信息的展示,没有更多等
  * @returns {function(*)}
  */
-export function onLoadMoreTrending(storeName, pageNo, pageSize, dataArray = [], callBack) {
+export function onLoadMoreTrending(storeName, pageNo, pageSize, dataArray = [], favoriteDao, callBack) {
   return dispatch => {
     setTimeout(() => {
       // 模拟网络请求
@@ -57,17 +57,20 @@ export function onLoadMoreTrending(storeName, pageNo, pageSize, dataArray = [], 
           error: 'no more',
           storeName: storeName,
           pageNo: --pageNo,
-          projectModes: dataArray,
+          projectModel: dataArray,
         });
       } else {
         //  本次和载入的最大数量
         let max = pageSize * pageNo > dataArray.length ? dataArray.length : pageSize * pageNo;
+
+        _projectModel(dataArray.slice(0, max), favoriteDao, data => {
         dispatch({
           type: Types.TRENDING_LOAD_MORE_SUCCESS,
           storeName,
           pageNo,
-          projectModes: dataArray.slice(0, max),
+          projectModel: data,
         });
+        })
       }
     }, 500);
   };

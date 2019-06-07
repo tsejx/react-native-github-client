@@ -1,20 +1,15 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { View } from 'react-native';
-
 import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
 import { BottomTabBar } from 'react-navigation-tabs';
-
 import PopularPage from 'pages/Popular/PopularPage';
 import TrendingPage from 'pages/Trending/TrendingPage';
 import FavoritePage from 'pages/Favorite/FavoritePage';
 import MinePage from 'pages/Mine/MinePage';
-
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
-
-
-import { connect } from 'react-redux';
 
 const TABS = {
   PopularPage: {
@@ -96,21 +91,7 @@ class TabBarComponent extends Component {
     };
   }
   render() {
-    // const { routes, index } = this.props.navigation.state;
-    // if (routes[index].params) {
-    //   const { theme } = routes[index].params;
-    //   if (theme && theme.updatedTime > this.theme.updatedTime) {
-    //     this.theme = theme;
-    //   }
-    // }
-
-    return (
-      <BottomTabBar
-        {...this.props}
-        activeTintColor={this.props.theme}
-        // activeTintColor={this.theme.tintColor || this.props.activeTintColor}
-      />
-    );
+    return <BottomTabBar {...this.props} activeTintColor={this.props.theme} />;
   }
 }
 

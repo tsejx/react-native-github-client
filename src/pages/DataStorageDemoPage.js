@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Button, TextInput, AsyncStorage } from 'react-native';
-import BaseComponent from '../base/BaseComponent';
 import { connect } from 'react-redux';
 import DataStorage from '../expand/data/DataStore';
 
 const KEY = 'save';
 
-export default class FetchDemoRact extends BaseComponent {
+export default class FetchDemoRact extends Component {
   constructor(props) {
     super(props);
     this.state = {

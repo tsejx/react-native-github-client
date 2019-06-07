@@ -1,27 +1,30 @@
-import Types from '../types';
-import DataStorage from '../../expand/data/DataStore';
+import Types from './types';
+import FetchData from '../services/FetchData';
+import { _projectModel, handleData } from './ActionUtil';
 const FLAG_STORAGE = { popular: 'popular', trending: 'trending' };
-import { handleData } from '../ActionUtil';
 
 /**
  * 获取最热数据的异步Action
  * @param {string} storeNames
  * @param {string} url
  * @param {number} pageSize
+ * @param favoriteDao
  */
-export function onRefreshPopular(storeName, url, pageSize) {
+export function onRefreshPopular(storeName, url, pageSize, favoriteDao) {
   return dispatch => {
     // 刷新
     dispatch({
       type: Types.POPULAR_REFRESH,
       storeName: storeName,
     });
-    let dataStore = new DataStorage();
+
+    let dataStore = new FetchData();
+
     // 异步Action与数据流
     dataStore
-      .fetchData(url, FLAG_STORAGE.popular)
+      .get(url, FLAG_STORAGE.popular)
       .then(data => {
-        handleData(Types.POPULAR_REFRESH_SUCCESS, dispatch, storeName, data, pageSize);
+        handleData(Types.POPULAR_REFRESH_SUCCESS, dispatch, storeName, data, pageSize, favoriteDao);
       })
       .catch(err => {
         console.log(err);
@@ -34,22 +37,26 @@ export function onRefreshPopular(storeName, url, pageSize) {
   };
 }
 
-// function handleData(dispatch, storeName, data, pageSize) {
-//   let fixItems = [];
-//   if (data && data.data && data.data.items) {
-//     fixItems = data.data.items;
-//   }
-//   dispatch({
-//     type: Types.POPULAR_REFRESH_SUCCESS,
-//     // 第一次要加载的数据
-//     projectModes: pageSize > fixItems.length ? fixItems : fixItems.slice(0, pageSize),
-//     items: fixItems,
-//     storeName,
-//     pageNo: 1,
-//   });
-// }
-
-export function onLoadMorePopular(storeName, pageNo, pageSize, dataArray = [], callback) {
+/**
+ * 加载更多
+ * @export
+ * @param  {any} storeName
+ * @param  {any} pageNo
+ * @param  {any} pageSize
+ * @param  {any} [dataArray=[]]
+ * @param  {any} fanvoriteDao
+ * @param  {any} callback
+ * @return
+ */
+export function onLoadMorePopular(
+  storeName,
+  pageNo,
+  pageSize,
+  dataArray = [],
+  favoriteDao,
+  callback
+) {
+  console.log('onLoadMore:', storeName);
   return dispatch => {
     setTimeout(() => {
       // 模拟网络请求
@@ -63,16 +70,19 @@ export function onLoadMorePopular(storeName, pageNo, pageSize, dataArray = [], c
           error: '没有更多了～',
           storeName: storeName,
           pageNo: --pageNo,
-          projectModes: dataArray,
+          projectModel: dataArray,
         });
       } else {
         // 本次和载入的最大数量
         let max = pageSize * pageNo > dataArray.length ? dataArray.length : pageSize * pageNo;
-        dispatch({
-          type: Types.POPULAR_LOAD_MORE_SUCCESS,
-          storeName,
-          pageNo,
-          projectModes: dataArray.slice(0, max),
+
+        _projectModel(dataArray.slice(0, max), favoriteDao, data => {
+          dispatch({
+            type: Types.POPULAR_LOAD_MORE_SUCCESS,
+            storeName,
+            pageNo,
+            projectModel: data,
+          });
         });
       }
     }, 500);

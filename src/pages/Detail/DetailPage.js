@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, WebView, TouchableOpacity, DeviceInfo } from 'react-native';
-import NavigationBar from 'components/NavigationBar/index';
+import NavigationBar from 'components/NavigationBar';
 import ViewUtil from '../../utils/ViewUtil';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AndroidPhysicsKey from 'components/AndroidPhysicsKey';
@@ -13,7 +13,9 @@ export default class DetailPage extends Component {
   constructor(props) {
     super(props);
     this.params = this.props.navigation.state.params;
+
     const { projectModel } = this.params;
+
     this.url = projectModel.html_url || prefixGithubUrl + projectModel.fullName;
     const title = projectModel.full_name || projectModel.fullName;
     console.log('detailPage', this.props.navigation)

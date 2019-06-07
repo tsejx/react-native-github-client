@@ -1,18 +1,17 @@
 import React, { Component } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import HTMLView from 'react-native-htmlview'
-export default class TrendingItem extends Component {
-  render() {
-    const { item } = this.props;
-    if (!item) return null;
-    let favoriteButton = (
-      <TouchableOpacity style={{ padding: 6 }} onPress={() => {}} underlayColor={'transparent'}>
-        <FontAwesome name={'star-o'} size={26} style={{ color: 'red' }} />
-      </TouchableOpacity>
-    );
+import HTMLView from 'react-native-htmlview';
+import BaseItem from 'components/BaseItem';
 
-    let description = '<p>' + item.description + '</p>'
+export default class TrendingItem extends BaseItem {
+  render() {
+    const { projectModel } = this.props;
+    const { item } = projectModel;
+    if (!item) return null;
+
+    let description = '<p>' + item.description + '</p>';
+
     return (
       <TouchableOpacity onPress={this.props.onSelect}>
         <View style={styles.cell_container}>
@@ -25,9 +24,7 @@ export default class TrendingItem extends Component {
               a: styles.description,
             }}
           />
-          <Text style={styles.description}>
-            {item.meta}
-          </Text>
+          <Text style={styles.description}>{item.meta}</Text>
           <View style={styles.row}>
             <View style={styles.row}>
               <Text>Contributors:</Text>
@@ -44,7 +41,7 @@ export default class TrendingItem extends Component {
               <Text>Star:</Text>
               <Text>{item.starCount}</Text>
             </View>
-            {favoriteButton}
+            {this.renderFavoriteIcon()}
           </View>
         </View>
       </TouchableOpacity>

@@ -9,6 +9,9 @@ module.exports = {
         'navigator': './src/navigator',
         'constants': './src/constants',
         'utils': './src/utils',
+        'components': './src/components',
+        'action': './src/actions',
+        'reducer': './src/reducer',
       }
     }]
   ]

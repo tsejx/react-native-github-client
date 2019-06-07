@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
-import BaseComponent from '../../base/BaseComponent';
 import { connect } from 'react-redux';
 import actions from '../../actions';
 import NavigationUtil from 'navigator/NavigationUtil';
-import NavigationBar from 'components/NavigationBar/index';
+import NavigationBar from 'components/NavigationBar';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 const THEME_COLOR = '#678';
-class MinePage extends BaseComponent {
+class MinePage extends Component {
   getRightButton() {
     return (
       <View style={{ flexDirection: 'row' }}>

@@ -1,12 +1,14 @@
 import { combineReducers } from 'redux';
-import { rootCom, RootNavigator } from '../navigator/AppNavigator';
+import { RootNavigator } from '../navigator/AppNavigator';
+import navigation from 'constants/navigation';
 import theme from './theme';
 import popular from './popular';
 import trending from './trending';
 
 // 1. 指定默认state
+// navigation.init是根路由的stackNavigator
 const navState = RootNavigator.router.getStateForAction(
-  RootNavigator.router.getActionForPathAndParams(rootCom)
+  RootNavigator.router.getActionForPathAndParams(navigation.init)
 );
 
 /**

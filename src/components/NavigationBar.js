@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, ViewPropTypes, StatusBar, StyleSheet, Platform } from 'react-native';
 import PropTypes from 'prop-types';
-import Feather from 'react-native-vector-icons/Feather'
+import Feather from 'react-native-vector-icons/Feather';
 
 // 导航栏在iOS中的高度
 const NAV_BAR_HEIGHT_IOS = 44;
@@ -49,14 +49,16 @@ export default class NavigationBar extends Component {
     let titleView = this.props.titleView ? (
       this.props.titleView
     ) : (
-      <Text ellipsizeMode="tail" numberOfLines={1} style={styles.title}>{this.props.title}</Text>
+      <Text ellipsizeMode="tail" numberOfLines={1} style={styles.title}>
+        {this.props.title}
+      </Text>
     );
 
     let content = this.props.hide ? null : (
       <View style={styles.navBar}>
-        {this.getButtonElement(this.props.leftButton)}
+        {/* {this.getButtonElement(this.props.leftButton)} */}
         <View style={[styles.navBarTitleContainer, this.props.titleLayout]}>{titleView}</View>
-        {this.getButtonElement(this.props.rightButton)}
+        {/* {this.getButtonElement(this.props.rightButton)} */}
       </View>
     );
 
@@ -71,32 +73,34 @@ export default class NavigationBar extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#2196f3',
+    backgroundColor: '#0557FF',
+  },
+  statusBar: {
+    height: Platform.OS === 'ios' ? STATUS_BAR_HEIGHT : 0,
   },
   navBar: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     height: Platform.OS === 'ios' ? NAV_BAR_HEIGHT_IOS : NAV_BAR_HEIGHT_ANDROID,
   },
-  // 底部按钮
-  navBarButton: {
-    alignItems: 'center',
-  },
   navBarTitleContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
     position: 'absolute',
-    left: 40,
+    left: 15,
     right: 40,
     top: 0,
     bottom: 0,
   },
   title: {
-    fontSize: 20,
+    fontSize: 26,
     color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'left',
   },
-  statusBar: {
-    height: Platform.OS === 'ios' ? STATUS_BAR_HEIGHT : 0,
+  // 底部按钮
+  navBarButton: {
+    alignItems: 'center',
   },
 });

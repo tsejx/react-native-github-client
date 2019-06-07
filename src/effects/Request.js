@@ -1,13 +1,15 @@
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import GitHubTrending from 'GitHubTrending';
 
 import { FLAG_STORAGE } from 'constants/flag';
 
 export default class Request {
+
   constructor(flag) {
     this.flag = flag;
     if (flag === FLAG_STORAGE.trending) this.trending = new GitHubTrending();
   }
+
   fetchNetRepository(url) {
     return new Promise((resolve, reject) => {
       if (this.flag !== FLAG_STORAGE.trending) {
@@ -44,7 +46,8 @@ export default class Request {
       }
     });
   }
-  saveRespository(url, items, callBack) {
+
+  async saveRespository(url, items, callBack) {
     if (!url || !items) return;
     let wrapData;
     if (this.flag === FLAG_STORAGE.mine) {
@@ -52,11 +55,11 @@ export default class Request {
     } else {
       wrapData = { items: items, update_date: new Date().getTime() };
     }
-    AsyncStorage.setItem(url, JSON.stringify(wrapData), callBack);
+    await AsyncStorage.setItem(url, JSON.stringify(wrapData), callBack);
   }
 
-  removeRepository(url) {
-    AsyncStorage.removeItem(url, (error, result) => {
+  async emoveRepository(url) {
+    await AsyncStorage.removeItem(url, (error, result) => {
       if (error) console.log(error);
     });
   }
