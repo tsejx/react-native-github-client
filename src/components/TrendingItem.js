@@ -6,29 +6,28 @@ import BaseItem from 'components/BaseItem';
 
 export default class TrendingItem extends BaseItem {
   render() {
-    const { projectModel } = this.props;
-    const { item } = projectModel;
-    if (!item) return null;
+    const { data } = this.props;
+    if (!data) return null;
 
-    let description = '<p>' + item.description + '</p>';
+    let description = '<p>' + data.description + '</p>';
 
     return (
       <TouchableOpacity onPress={this.props.onSelect}>
-        <View style={styles.cell_container}>
-          <Text style={styles.title}>{item.full_name}</Text>
-          <HTMLView
-            value={description}
-            onLinkPress={url => {}}
-            shtylesheet={{
-              p: styles.description,
-              a: styles.description,
-            }}
-          />
-          <Text style={styles.description}>{item.meta}</Text>
-          <View style={styles.row}>
-            <View style={styles.row}>
-              <Text>Contributors:</Text>
-              {item.contributors.map((res, index, arr) => {
+        <View style={styles.container}>
+          <View style={styles.heading}>
+            <Text style={styles.title} numberOfLines={2}>
+              {data.fullName}
+            </Text>
+          </View>
+
+          {/* 解析HTML */}
+          <HTMLView value={description} onLinkPress={url => {}} shtylesheet={htmlStyle} />
+
+          <Text style={styles.subDescription}>{data.meta}</Text>
+
+          <View style={styles.statisticContainer}>
+            <View style={styles.seq}>
+              {data.contributors.map((res, index, arr) => {
                 return (
                   <Image
                     style={{ height: 22, width: 22, margin: 2 }}
@@ -37,11 +36,7 @@ export default class TrendingItem extends BaseItem {
                 );
               })}
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text>Star:</Text>
-              <Text>{item.starCount}</Text>
-            </View>
-            {this.renderFavoriteIcon()}
+            {/* {this.renderFavoriteIcon()} */}
           </View>
         </View>
       </TouchableOpacity>
@@ -50,35 +45,63 @@ export default class TrendingItem extends BaseItem {
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  cell_container: {
+  container: {
     backgroundColor: 'white',
-    padding: 10,
-    marginLeft: 5,
-    marginRight: 5,
+    padding: 12,
+    paddingLeft: 15,
+    paddingRight: 15,
+    marginLeft: 15,
+    marginRight: 15,
+    marginTop: 8,
+    marginBottom: 8,
     marginVertical: 3,
     borderColor: '#ddd',
-    borderWidth: 0.5,
-    borderRadius: 2,
+    borderRadius: 12,
     shadowColor: 'gray',
-    shadowOffset: { width: 0.5, height: 0.5 },
+    shadowOffset: { width: 1, height: 1.5 },
     shadowOpacity: 0.4,
-    shadowRadius: 1,
+    shadowRadius: 2,
     // 安卓设置阴影
-    elevation: 2,
+    elevation: 3,
+  },
+  heading: {
+    marginBottom: 8,
   },
   title: {
-    fontSize: 16,
-    marginBottom: 2,
-    color: '#212121',
+    lineHeight: 26,
+    color: '#0366d6',
+    fontSize: 20,
+    fontWeight: '600',
   },
   description: {
     fontSize: 14,
-    marginBottom: 2,
-    color: '#757575',
+    marginBottom: 16,
+    color: '#586069',
+  },
+  subDescription: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    fontSize: 13,
+    marginTop: 16,
+    marginBottom: 8,
+    color: '#586069',
+  },
+  statisticContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    marginBottom: 8,
+  },
+  sep: {
+    marginRight: 8,
+  },
+});
+
+const htmlStyle = StyleSheet.create({
+  p: {
+    fontSize: 14,
+    marginBottom: 16,
+    color: '#586069',
   },
 });

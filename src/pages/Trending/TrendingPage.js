@@ -9,18 +9,10 @@ import {
 } from 'react-native';
 import { createMaterialTopTabNavigator, createAppContainer } from 'react-navigation';
 import TrendingTabPage from './TrendingTabPage';
-import { FLAG_STORAGE } from 'constants/flag';
 import NavigationBar from 'components/NavigationBar';
 import TrendingDialog, { TimeSpans } from 'components/TrendingDialog';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-function getSearchUrl(tab) {
-  const URL = 'https://api.github.com/trending/';
-  const QUERY_STR = '?since=daily';
-  return URL + tab + QUERY_STR;
-}
-
-const THEME_COLOR = '#678';
 const EVENT_TYPE_TIME_SPAN_CHANGE = 'EVENT_TYPE_TIME_SPAN_CHANGE';
 
 type Props = {};
@@ -43,10 +35,9 @@ export default class TrendingPage extends Component<Props> {
           underlayColor="transparent"
           onPress={() => this.dialog.show()}
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ fontSize: 18, color: '#fff', fontWeight: '400' }}>
-              趋势{this.state.timeSpan.showText}
-            </Text>
+          <View style={styles.tabHeaderContainer}>
+            <Text style={styles.tabHeaderTitle}>Trending</Text>
+            <Text style={styles.tabHeaderSelector}>{this.state.timeSpan.showText}</Text>
             <MaterialIcons name="arrow-drop-down" size={22} style={{ color: 'white' }} />
           </View>
         </TouchableOpacity>
@@ -91,13 +82,27 @@ export default class TrendingPage extends Component<Props> {
       // 这样TabNavigator就不用每次都要重复创建，只有初始化和改变Tab的时候才会重新创建
       this.tabNav = createAppContainer(
         createMaterialTopTabNavigator(this.generateTabPage(), {
+          // 是否允许在标签页之间滑动
+          swipeEnabled: true,
+          // 是否在更改标签页时进行动画处理
+          animationEnabled: true,
+          // 标签高亮时才渲染页面
+          lazy: true,
+          // 标签栏配置
           tabBarOptions: {
-            tabStyle: styles.tabStyle,
+            // 是否使标签大写
             upperCaseLabel: false,
+            // 是否支持选项卡滚动
             scrollEnabled: true,
+            // TabBar样式
+            style: styles.tabBarStyle,
+            // 选项卡标签样式
+            labelStyle: styles.labelStyle,
+            // 选项卡指示器样式
+            indicatorStyle: styles.indicatorStyle,
+            // 选项卡样式
+            tabStyle: styles.tabStyle,
           },
-          indicatorStyle: styles.indicatorStyle,
-          labelStyle: styles.labelStyle,
         })
       );
     return this.tabNav;
@@ -108,17 +113,15 @@ export default class TrendingPage extends Component<Props> {
       <NavigationBar
         titleView={this.renderTitleView()}
         statusBar={{
-          backgroundColor: THEME_COLOR,
           barStyle: 'light-content',
         }}
-        style={{ backgroundColor: THEME_COLOR }}
       />
     );
 
     const TabNavigator = this.renderTabNav();
 
     return (
-      <View style={{ flex: 1, marginTop: DeviceInfo.isIPhoneX_deprecated ? 30 : 0 }}>
+      <View style={styles.container}>
         {navigationBar}
         <TabNavigator />
         {this.renderTrendingDialog()}
@@ -131,16 +134,37 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  tabHeaderContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  tabHeaderTitle: {
+    fontSize: 26,
+    color: '#fff',
+    fontWeight: 'bold',
+    textAlign: 'left',
+  },
+  tabHeaderSelector: {
+    fontSize: 14,
+    color: '#fff',
+    fontWeight: 'bold',
+    marginLeft: 16,
+  },
   tabStyle: {
-    // minWidth: 50,
     padding: 0,
   },
   indicatorStyle: {
     height: 2,
-    backgroundColor: 'white',
+    backgroundColor: 'red',
   },
   labelStyle: {
-    fontSize: 13,
-    margin: 0,
+    lineHeight: 18,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  tabBarStyle: {
+    backgroundColor: '#0557FF',
+    // 修复开启ScrollEnabled后在Android上初次加载时闪烁问题
+    height: 36,
   },
 });

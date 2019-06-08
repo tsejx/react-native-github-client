@@ -9,11 +9,12 @@ import NavigationUtil from 'navigator/NavigationUtil';
 type Props = {};
 export default class WelcomePage extends Component<Props> {
   componentDidMount() {
+    console.log('Welcome Page ComponentDidMount');
     this.timer = setTimeout(() => {
       NavigationUtil.redirectToHomePage({
         navigation: this.props.navigation,
-      })
-    }, 100);
+      });
+    }, 500);
   }
 
   componentWillUnmount() {

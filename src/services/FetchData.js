@@ -5,6 +5,7 @@ import { FLAG_STORAGE } from 'constants/flag';
 export default class FetchData {
   saveData(url, data, callback) {
     if (!data || !url) {
+      throw new Error(`'data' and 'url' must be defined`);
       return;
     }
     AsyncStorage.setItem(url, JSON.stringify(this.wrapData(data)), callback);
@@ -24,27 +25,34 @@ export default class FetchData {
    */
   get(url, flag) {
     return new Promise((resolve, reject) => {
+      // 先获取本地数据
       this.fetchLocalData(url)
         .then(wrapData => {
           if (wrapData && FetchData.checkTimestampValid(wrapData.timestamp)) {
+            // 本地有缓存并且缓存未过期
             resolve(wrapData);
           } else {
+            // 本地缓存不存在或者本地缓存已经过期
+            // 则重新从服务端获取数据
             this.fetchNetData(url, flag)
               .then(data => {
                 resolve(this.wrapData(data));
               })
-              .catch(error => {
-                reject(error);
+              .catch(err => {
+                console.error(err);
+                reject(err);
               });
           }
         })
-        .catch(error => {
+        .catch(err => {
+          // 捕获错误将重新进行网络请求
           this.fetchNetData(url, flag)
             .then(data => {
-              resolve(this.wrapData());
+              resolve(this.wrapData(data));
             })
-            .catch(error => {
-              reject(error);
+            .catch(err => {
+              console.error(err);
+              reject(err);
             });
         });
     });
@@ -60,6 +68,7 @@ export default class FetchData {
       AsyncStorage.getItem(url, (error, result) => {
         if (!error) {
           try {
+            // 本地有缓存
             resolve(JSON.parse(result));
           } catch (e) {
             reject(e);

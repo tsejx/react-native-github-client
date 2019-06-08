@@ -3,9 +3,9 @@ import { Modal, Text, StatusBar, StyleSheet, View, Platform, TouchableOpacity } 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import TimeSpan from '../model/TimeSpan';
 export const TimeSpans = [
-  new TimeSpan('今天', 'since=daily'),
-  new TimeSpan('本周', 'since=weekly'),
-  new TimeSpan('本月', 'since=monthly'),
+  new TimeSpan('Daily', 'since=daily'),
+  new TimeSpan('Weekly', 'since=weekly'),
+  new TimeSpan('Monthly', 'since=monthly'),
 ];
 
 export default class TrendingDialog extends Component {
@@ -57,17 +57,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   arrow: {
-    marginTop: 40,
+    marginTop: 60,
     color: 'white',
     padding: 0,
     margin: -15,
   },
   content: {
     backgroundColor: 'white',
-    borderRadius: 3,
-    paddingTop: 3,
-    paddingBottom: 3,
-    marginRight: 3,
+    borderRadius: 10,
+    paddingTop: 5,
+    paddingBottom: 5,
+    marginRight: 5,
   },
   textContent: {
     alignItems: 'center',

@@ -1,10 +1,8 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import GitHubTrending from 'GitHubTrending';
-
 import { FLAG_STORAGE } from 'constants/flag';
 
 export default class Request {
-
   constructor(flag) {
     this.flag = flag;
     if (flag === FLAG_STORAGE.trending) this.trending = new GitHubTrending();

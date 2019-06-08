@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Button, TextInput, AsyncStorage } from 'react-native';
 import { connect } from 'react-redux';
-import DataStorage from '../expand/data/DataStore';
+import FetchData from '../../services/FetchData';
 
 const KEY = 'save';
 

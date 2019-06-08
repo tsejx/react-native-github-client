@@ -19,23 +19,7 @@ const initialState = { theme: 'black' };
  * @return {{theme: (*|onAction|string)}}
  */
 export default function onAction(state = initialState, action) {
-  // console.log(action.type, state[action.storeName]);
   switch (action.type) {
-    // 下拉刷新成功
-    case Types.POPULAR_REFRESH_SUCCESS:
-      return {
-        ...state,
-        [action.storeName]: {
-          ...state[action.storeName],
-          // 原始数据
-          items: action.items,
-          // 当前要展示的数据
-          projectModel: action.projectModel,
-          isLoading: false,
-          hideLoadingMore: false,
-          pageNo: action.pageNo,
-        },
-      };
     // 下拉刷新
     case Types.POPULAR_REFRESH:
       return {
@@ -45,6 +29,21 @@ export default function onAction(state = initialState, action) {
           items: action.items,
           isLoading: true,
           hideLoadingMore: true,
+        },
+      };
+    // 下拉刷新成功
+    case Types.POPULAR_REFRESH_SUCCESS:
+      return {
+        ...state,
+        [action.storeName]: {
+          ...state[action.storeName],
+          // 原始数据
+          items: action.items,
+          // 当前要展示的数据
+          showItems: action.showItems,
+          pageNo: action.pageNo,
+          isLoading: false,
+          hideLoadingMore: false,
         },
       };
     // 下拉刷新失败
@@ -63,9 +62,9 @@ export default function onAction(state = initialState, action) {
         [action.storeName]: {
           ...state[action.storeName],
           // items: action.items,
-          projectModel: action.projectModel,
-          hideLoadingMore: false,
+          showItems: action.showItems,
           pageNo: action.pageNo,
+          hideLoadingMore: false,
         },
       };
     // 上拉加载更多失败
@@ -74,9 +73,9 @@ export default function onAction(state = initialState, action) {
         ...state,
         [action.storeName]: {
           ...state[action.storeName],
-          projectModel: action.projectModel,
-          hideLoadingMore: true,
+          showItems: action.showItems,
           pageNo: action.pageNo,
+          hideLoadingMore: true,
         },
       };
     default:

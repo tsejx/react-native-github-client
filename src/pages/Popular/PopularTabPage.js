@@ -23,7 +23,6 @@ import { FLAG_STORAGE } from 'constants/flag';
 const favoriteDao = new FavoriteDao(FLAG_STORAGE.popular);
 
 const THEME_COLOR = 'red';
-const PAGE_SIZE = 10;
 
 class PopularTab extends Component {
   constructor(props) {
@@ -47,7 +46,7 @@ class PopularTab extends Component {
   // 列表顶部下拉刷新
   onRefresh() {
     const url = api.search(this.tabName.toLowerCase());
-    this.props.onRefreshPopular(this.tabName, url, PAGE_SIZE, favoriteDao);
+    this.props.onRefreshPopular(this.tabName, url, favoriteDao);
   }
 
   // 列表触底加载更多
@@ -55,9 +54,8 @@ class PopularTab extends Component {
     const store = this.getStore();
     this.props.onLoadMorePopular(
       this.tabName,
-      ++store.pageNo,
-      PAGE_SIZE,
       store.items,
+      ++store.pageNo,
       favoriteDao,
       callback => {
         this.refs.toast.show('沒有更多了～');
@@ -73,7 +71,7 @@ class PopularTab extends Component {
         items: [],
         isLoading: false,
         // 需要显示的数据
-        projectModel: [],
+        showItems: [],
         // 默认隐藏加载更多
         hideLoadingMore: true,
       };
@@ -85,7 +83,7 @@ class PopularTab extends Component {
     const { item } = data;
     return (
       <PopularItem
-        item={item}
+        data={item}
         onSelect={() => {}}
         // 关联到BaseItem的handleFavoriteChange
         // onFavorite={(item, isFavorite) => {
@@ -112,18 +110,18 @@ class PopularTab extends Component {
     return (
       <View style={styles.container}>
         <FlatList
-          keyExtractor={(item, index) => {
-            return `${item.item.id}`;
-          }}
-          data={store.projectModel}
+          keyExtractor={(item, index) => '' + (item.id || item.item.id)}
+          data={store.showItems}
           renderItem={this.renderItem}
-          style={styles.flatList}
+          // style={styles.flatList}
+          // 改变ListView或FlatList这种类似的自由容物的控件
+          contentContainerStyle={styles.flatList}
           // 列表顶部下拉刷新
           refreshControl={
             <RefreshControl
               title="Loading"
-              titleColor='#586069'
-              tintColor='#586069'
+              titleColor="#586069"
+              tintColor="#586069"
               colors={['#586069']}
               refreshing={store.isLoading}
               onRefresh={() => this.loadData()}
@@ -159,11 +157,11 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  onRefreshPopular: (storeName, url, pageSize, favoriteDao) =>
-    dispatch(actions.onRefreshPopular(storeName, url, pageSize, favoriteDao)),
+  onRefreshPopular: (storeName, url, favoriteDao) =>
+    dispatch(actions.onRefreshPopular(storeName, url, favoriteDao)),
 
-  onLoadMorePopular: (storeName, url, pageSize, items, favoriteDao, callback) =>
-    dispatch(actions.onLoadMorePopular(storeName, url, pageSize, items, favoriteDao, callback)),
+  onLoadMorePopular: (storeName, url, items, favoriteDao, callback) =>
+    dispatch(actions.onLoadMorePopular(storeName, url, items, favoriteDao, callback)),
 });
 
 const PopularTabPage = connect(
@@ -181,6 +179,7 @@ const styles = StyleSheet.create({
   },
   flatList: {
     paddingTop: 8,
+    paddingBottom: 8,
   },
   indicatorContainer: {
     alignItems: 'center',

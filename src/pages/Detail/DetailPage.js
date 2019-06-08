@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, WebView, TouchableOpacity, DeviceInfo } from 'react-native';
 import NavigationBar from 'components/NavigationBar';
-import ViewUtil from '../../utils/ViewUtil';
+import ViewUtil from 'utils/ViewUtil';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AndroidPhysicsKey from 'components/AndroidPhysicsKey';
 import NavigationUtil from '../../navigator/NavigationUtil';
@@ -18,7 +18,7 @@ export default class DetailPage extends Component {
 
     this.url = projectModel.html_url || prefixGithubUrl + projectModel.fullName;
     const title = projectModel.full_name || projectModel.fullName;
-    console.log('detailPage', this.props.navigation)
+    console.log('detailPage', this.props.navigation);
     this.state = {
       title: title,
       url: this.url,
@@ -26,6 +26,7 @@ export default class DetailPage extends Component {
     };
 
     this.backPress = new AndroidPhysicsKey({ backPress: () => this.onBackPress() });
+    this.onBack = this.onBack.bind(this);
   }
   componentDidMount() {
     this.backPress.componentDidMount();
@@ -70,10 +71,10 @@ export default class DetailPage extends Component {
     let navigationBar = (
       <NavigationBar
         title={this.state.title}
-        titleLayoutStyle={titleLayoutStyle}
-        leftButton={ViewUtil.getLeftBackButton(() => this.onBack())}
-        rightButton={this.renderRightButton()}
-        style={{ backgroundColor: THEME_COLOR }}
+        titleStyle={{ fontSize: 24 }}
+        titleLayout={titleLayoutStyle}
+        leftButton={this.onBack}
+        rightButton={() => {}}
       />
     );
 
@@ -94,8 +95,5 @@ export default class DetailPage extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: DeviceInfo.isIPhoneX_deprecated ? 30 : 0
-    // justifyContent: 'center',
-    // alignItems: 'center',
   },
 });

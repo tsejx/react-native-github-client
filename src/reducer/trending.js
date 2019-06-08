@@ -1,7 +1,7 @@
 import Types from '../actions/types';
 
 const defaultState = {
-  theme: 'blue',
+  theme: '#0557FF',
 };
 /**
  * popular: {
@@ -23,6 +23,17 @@ const defaultState = {
 export default function onAction(state = defaultState, action) {
   // console.log('!!!!', action.type, action, state);
   switch (action.type) {
+    // 下拉刷新
+    case Types.TRENDING_REFRESH:
+      return {
+        ...state,
+        [action.storeName]: {
+          ...state[action.storeName],
+          items: action.items,
+          isLoading: true,
+          hideLoadingMore: true,
+        },
+      };
     // 下拉刷新成功
     case Types.TRENDING_REFRESH_SUCCESS:
       return {
@@ -32,23 +43,13 @@ export default function onAction(state = defaultState, action) {
           // 原始数据
           items: action.items,
           // 当前要展示的数据
-          projectModel: action.projectModel,
+          showItems: action.showItems,
+          pageNo: action.pageNo,
           isLoading: false,
           hideLoadingMore: false,
-          pageNo: action.pageNo,
         },
       };
-    // 下拉刷新
-    case Types.TRENDING_REFRESH:
-      return {
-        ...state,
-        [action.storeName]: {
-          ...state[action.storeName],
-          // items: action.items,
-          isLoading: true,
-          hideLoadingMore: true,
-        },
-      };
+
     // 下拉刷新失败
     case Types.TRENDING_REFRESH_FAIL:
       return {
@@ -65,9 +66,9 @@ export default function onAction(state = defaultState, action) {
         [action.storeName]: {
           ...state[action.storeName],
           // items: action.items,
-          projectModel: action.projectModel,
-          hideLoadingMore: false,
+          showItems: action.showItems,
           pageNo: action.pageNo,
+          hideLoadingMore: false,
         },
       };
     // 上拉加载更多失败
@@ -76,9 +77,9 @@ export default function onAction(state = defaultState, action) {
         ...state,
         [action.storeName]: {
           ...state[action.storeName],
-          projectModel: action.projectModel,
-          hideLoadingMore: true,
+          showItems: action.showItems,
           pageNo: action.pageNo,
+          hideLoadingMore: true,
         },
       };
     default:

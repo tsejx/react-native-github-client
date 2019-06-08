@@ -9,9 +9,9 @@ import {
 import WelcomePage from 'pages/Entry/WelcomePage';
 import HomePage from 'pages/Entry/HomePage';
 import DetailPage from 'pages/Detail/DetailPage';
-import FetchDemoPage from 'pages/FetchDemoPage';
-import AsyncStorageDemoPage from 'pages/AsyncStorageDemoPage';
-import DataStorageDemoPage from 'pages/DataStorageDemoPage';
+// import FetchDemoPage from 'pages/FetchDemoPage';
+// import AsyncStorageDemoPage from 'pages/AsyncStorageDemoPage';
+// import DataStorageDemoPage from 'pages/DataStorageDemoPage';
 
 import {
   createReactNavigationReduxMiddleware,

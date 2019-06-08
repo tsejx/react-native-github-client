@@ -13,35 +13,35 @@ export default class PopularItem extends BaseItem {
     }
   }
   render() {
-    const { item } = this.props.item;
-    if (!item || !item.owner) return null;
+    const { data } = this.props;
+    if (!data || !data.owner) return null;
     return (
       <TouchableOpacity onPress={this.props.onSelect}>
         <View style={styles.container}>
           <View style={styles.heading}>
             <Text style={styles.title} numberOfLines={2}>
-              {item.full_name}
+              {data.full_name}
             </Text>
           </View>
           <Text style={styles.description}>
-            {item.description ? item.description : 'no description'}
+            {data.description ? data.description : 'no description'}
           </Text>
           <View style={styles.subDescription}>
-            {item.license && item.license.name ? (
-              <Text style={styles.license}>{item.license.name}</Text>
+            {data.license && data.license.name ? (
+              <Text style={styles.license}>{data.license.name}</Text>
             ) : null}
           </View>
           <View style={styles.statisticContainer}>
             <View style={styles.sep}>
-              <Image style={{ height: 22, width: 22 }} source={{ uri: item.owner.avatar_url }} />
+              <Image style={{ height: 22, width: 22 }} source={{ uri: data.owner.avatar_url }} />
             </View>
             <View style={[styles.muted, styles.sep]}>
               <FontAwesome name="star" size={14} style={styles.icon} />
-              <Text style={styles.num}>{this.toFix(item.stargazers_count)}</Text>
+              <Text style={styles.num}>{this.toFix(data.stargazers_count)}</Text>
             </View>
             <View style={[styles.muted, styles.sep]}>
               <AntDesign name="fork" size={14} style={styles.icon} />
-              <Text style={styles.num}>{this.toFix(item.forks)}</Text>
+              <Text style={styles.num}>{this.toFix(data.forks)}</Text>
             </View>
             {/* 继承自BaseItem的收藏图标的渲染 */}
             {/* {this.renderFavoriteIcon()} */}

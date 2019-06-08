@@ -1,16 +1,17 @@
 import Types from './types';
 import FetchData from '../services/FetchData';
 import { _projectModel, handleData } from './ActionUtil';
+import handleOriginalData from 'utils/handleOriginalData';
+import InitialValue from 'constants/initialValue';
 const FLAG_STORAGE = { popular: 'popular', trending: 'trending' };
 
 /**
  * 获取最热数据的异步Action
  * @param {string} storeNames
  * @param {string} url
- * @param {number} pageSize
  * @param favoriteDao
  */
-export function onRefreshPopular(storeName, url, pageSize, favoriteDao) {
+export function onRefreshPopular(storeName, url, favoriteDao) {
   return dispatch => {
     // 刷新
     dispatch({
@@ -18,16 +19,28 @@ export function onRefreshPopular(storeName, url, pageSize, favoriteDao) {
       storeName: storeName,
     });
 
-    let dataStore = new FetchData();
+    let fetchData = new FetchData();
 
     // 异步Action与数据流
-    dataStore
+    fetchData
       .get(url, FLAG_STORAGE.popular)
-      .then(data => {
-        handleData(Types.POPULAR_REFRESH_SUCCESS, dispatch, storeName, data, pageSize, favoriteDao);
+      .then(res => {
+        const dataSource = handleOriginalData(res);
+
+        const showData =
+          InitialValue.pageSize > dataSource.length
+            ? dataSource
+            : dataSource.slice(0, InitialValue.pageSize);
+
+        dispatch({
+          type: Types.POPULAR_REFRESH_SUCCESS,
+          storeName,
+          showItems: showData,
+          items: dataSource,
+          pageNo: 1,
+        });
       })
       .catch(err => {
-        console.log(err);
         dispatch({
           type: Types.POPULAR_REFRESH_FAIL,
           storeName,
@@ -42,48 +55,45 @@ export function onRefreshPopular(storeName, url, pageSize, favoriteDao) {
  * @export
  * @param  {any} storeName
  * @param  {any} pageNo
- * @param  {any} pageSize
- * @param  {any} [dataArray=[]]
+ * @param  {any} [dataSource=[]]
  * @param  {any} fanvoriteDao
  * @param  {any} callback
  * @return
  */
 export function onLoadMorePopular(
   storeName,
+  dataSource = [],
   pageNo,
-  pageSize,
-  dataArray = [],
   favoriteDao,
   callback
 ) {
-  console.log('onLoadMore:', storeName);
   return dispatch => {
+    // 模拟网络请求
     setTimeout(() => {
-      // 模拟网络请求
-      if ((pageNo - 1) * pageSize >= dataArray.length) {
+      if ((pageNo - 1) * InitialValue.pageSize >= dataSource.length) {
         // 已加载完全部数据
         if (typeof callback === 'function') {
-          callback('没有更多了～');
+          callback();
         }
+
         dispatch({
           type: Types.POPULAR_LOAD_MORE_FAIL,
-          error: '没有更多了～',
           storeName: storeName,
           pageNo: --pageNo,
-          projectModel: dataArray,
+          showItems: dataSource,
         });
+
       } else {
         // 本次和载入的最大数量
-        let max = pageSize * pageNo > dataArray.length ? dataArray.length : pageSize * pageNo;
+        let max = InitialValue.pageSize * pageNo > dataSource.length ? dataSource.length : InitialValue.pageSize * pageNo;
 
-        _projectModel(dataArray.slice(0, max), favoriteDao, data => {
           dispatch({
             type: Types.POPULAR_LOAD_MORE_SUCCESS,
-            storeName,
-            pageNo,
-            projectModel: data,
+            storeName: storeName,
+            pageNo: pageNo,
+            showItems: dataSource.slice(0, max),
           });
-        });
+
       }
     }, 500);
   };
