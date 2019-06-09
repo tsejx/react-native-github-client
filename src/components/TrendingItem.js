@@ -12,7 +12,7 @@ export default class TrendingItem extends BaseItem {
     let description = '<p>' + data.description + '</p>';
 
     return (
-      <TouchableOpacity onPress={this.props.onSelect}>
+      <TouchableOpacity key={data.fullName} onPress={this.props.onSelect}>
         <View style={styles.container}>
           <View style={styles.heading}>
             <Text style={styles.title} numberOfLines={2}>

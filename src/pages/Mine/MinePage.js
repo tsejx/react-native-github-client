@@ -1,12 +1,87 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Button, TouchableOpacity, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
 import actions from '../../actions';
 import NavigationUtil from 'navigator/NavigationUtil';
 import NavigationBar from 'components/NavigationBar';
+
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Octicons from 'react-native-vector-icons/Octicons';
+
+import ProfileItem from 'components/ProfileItem';
+
 const THEME_COLOR = '#678';
+
+const menu = [
+  {
+    title: 'Trending',
+    children: [
+      {
+        title: 'Custom Language',
+        route: '',
+        Icon: Ionicons,
+        iconType: 'md-checkbox-outline',
+      },
+      {
+        title: 'Sort Language',
+        route: '',
+        Icon: MaterialIcons,
+        iconType: 'language',
+      },
+    ],
+  },
+  {
+    title: 'Discover',
+    children: [
+      {
+        title: 'Custom Label',
+        route: '',
+        Icon: Ionicons,
+        iconType: 'md-checkbox-outline',
+      },
+      {
+        title: 'Sort Label ',
+        route: '',
+        Icon: MaterialCommunityIcons,
+        iconType: 'sort',
+      },
+      {
+        title: 'Remove Label',
+        route: '',
+        Icon: Ionicons,
+        iconType: 'md-remove',
+      },
+    ],
+  },
+  {
+    title: 'Setting',
+    children: [
+      {
+        title: 'Custom Theme',
+        route: '',
+        Icon: Ionicons,
+        iconType: 'ios-color-palette',
+      },
+      {
+        title: 'About Author',
+        route: '',
+        Icon: Octicons,
+        iconType: 'smiley',
+      },
+      {
+        title: 'Feedback',
+        route: '',
+        Icon: MaterialIcons,
+        iconType: 'feedback',
+      },
+    ],
+  },
+];
+
 class MinePage extends Component {
   getRightButton() {
     return (
@@ -28,83 +103,74 @@ class MinePage extends Component {
     );
   }
 
+  renderProfileMenu() {
+    return menu.map(md => {
+      return (
+        <View key={md.title}>
+          <View style={styles.seperator} />
+          <Text style={styles.moduleTitle}>{md.title}</Text>
+          {md.children.map(menuItem => {
+            return (
+              <>
+                <View style={styles.seperator} />
+                <ProfileItem
+                  text={menuItem.title}
+                  IconCom={menuItem.Icon}
+                  iconType={menuItem.iconType}
+                  onPress={() => {}}
+                />
+              </>
+            );
+          })}
+        </View>
+      );
+    });
+  }
+
   render() {
-    let statusBar = {
-      backgroundColor: THEME_COLOR,
-      barStyle: 'light-content',
-    };
     let navigationBar = (
       <NavigationBar
         title="Profile"
-        statusBar={statusBar}
-        style={{ backgroundColor: THEME_COLOR }}
-        rightButton={this.getRightButton()}
-        leftButton={this.getLeftButton()}
+        statusBar={{
+          backgroundColor: THEME_COLOR,
+          barStyle: 'light-content',
+        }}
       />
     );
     return (
-      <View style={{ flex: 1 }}>
+      <View style={styles.container}>
         {navigationBar}
-        <Text>MyPage</Text>
-        <View style={styles.container}>
-          <Button
-            title="改变主题色"
+        <ScrollView>
+          <TouchableOpacity
+            style={styles.item}
             onPress={() => {
-              this.props.onThemeChange('orange');
-              // navigation.setParams({
-              //   theme: {
-              //     tintColor: 'orange',
-              //     updatedTime: new Date().getTime(),
-              //   },
-              // });
-            }}
-          />
-          <Text
-            onPress={() => {
-              NavigationUtil.routeTo(
-                {
-                  navigation: this.props.navigation,
-                },
-                'DetailPage'
-              );
+
             }}
           >
-            跳转到详情页
-          </Text>
-          <Button
-            title="Fetch"
-            onPress={() => {
-              NavigationUtil.routeTo(
-                {
-                  navigation: this.props.navigation,
-                },
-                'FetchDemoPage'
-              );
-            }}
-          />
-          <Button
-            title="AsyncStorage"
-            onPress={() => {
-              NavigationUtil.routeTo(
-                {
-                  navigation: this.props.navigation,
-                },
-                'AsyncStorageDemoPage'
-              );
-            }}
-          />
-          <Button
-            title="离线缓存框架"
-            onPress={() => {
-              NavigationUtil.routeTo(
-                {
-                  navigation: this.props.navigation,
-                },
-                'DataStorageDemoPage'
-              );
-            }}
-          />
-        </View>
+            <View style={styles.userIcon}>
+              <AntDesign
+                name="github"
+                size={40}
+                style={{
+                  marginRight: 10,
+                  color: '#000000',
+                }}
+              />
+              <Text>GitHub Profile</Text>
+            </View>
+            <AntDesign
+              name="right"
+              size={16}
+              style={{
+                marginRight: 10,
+                alignSelf: 'center',
+                color: '#0557FF',
+              }}
+            />
+          </TouchableOpacity>
+
+        {this.renderProfileMenu()}
+        </ScrollView>
       </View>
     );
   }
@@ -113,9 +179,30 @@ class MinePage extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+  },
+  item: {
+    backgroundColor: 'white',
+    padding: 10,
+    height: 90,
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+  },
+  userIcon: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  seperator: {
+    height: 0.5,
+    opacity: 0.5,
+    backgroundColor: 'darkgray',
+  },
+  moduleTitle: {
+    marginLeft: 10,
+    marginTop: 10,
+    marginBottom: 5,
+    fontSize: 12,
+    color: 'gray',
   },
 });
 
